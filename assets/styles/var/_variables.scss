@@ -1,0 +1,69 @@
+/*
+    COLOR
+*/
+
+$colors: (
+  acent: (
+    300: #DF4040
+  ),
+  tip: (
+    300: #F8EED2,
+    400: #513B00,
+  ),
+  link: (
+    300: #FFE6CD,
+    400: #492515,
+  ),
+  greyscale: (
+    100: #fff,
+    200: #EBEBEB,
+    300: #C4C4C4,
+    400: #9C9C9C,
+    500: #525252,
+    600: #000,
+  )
+);
+
+/*
+  FONTS
+*/
+
+// Family
+$font-family-main: "Poppins", sans-serif;
+
+// Line height
+$font-line-height-s: 140%;
+$font-line-height-m: 150%;
+
+// Sizes
+$fontSize: (
+  body: (
+    xs: rem(12),
+    s: rem(14),
+    m: rem(16),
+    l: rem(18),
+    xl: rem(20)
+  ),
+  title: (
+    m: rem(22),
+    l: rem(24),
+  )
+);
+
+// Weight
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 600;
+
+/*
+    Radii
+*/
+
+$radii-m: 20px;
+
+/*
+  Margins
+*/
+
+$page-margin: 20px;

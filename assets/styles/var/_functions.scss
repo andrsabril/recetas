@@ -1,0 +1,17 @@
+// COLOR
+@function color($base, $shade: 100) {
+    $color: map-get(map-get($colors, $base), $shade);
+    @return $color;
+}
+
+// PX TO REM --> rem(#)
+$font-base-rem: 16;
+@function rem($pxValue) {
+    @return calc($pxValue / $font-base-rem) + rem;
+}
+
+// FONTS SIZE
+@function fontSize($base, $size: m) {
+    $fontSize: map-get(map-get($fontSize, $base), $size);
+    @return $fontSize;
+}
