@@ -1,10 +1,20 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-
+import svgLoader from 'vite-svg-loader';
 export default defineNuxtConfig({
+  runtimeConfig: {
+    public: {
+      host: process.env.NUXT_HOST || 'localhost',
+      port: process.env.NUXT_PORT ? String(process.env.NUXT_PORT) : '3000'
+    }
+  },
   compatibilityDate: '2024-04-03',
   devtools: { enabled: false },
+  modules: ['@pinia/nuxt'],
+  pinia: {
+    storesDirs: ['./stores/**', './custom-folder/stores/**'],
+  },
   plugins: [
-    '~/plugins/loadRecipes.js'
+    '~/plugins/loadRecipes.js',
   ],
   vite: {
     css: {
@@ -14,6 +24,9 @@ export default defineNuxtConfig({
         }
       }
     },
+    plugins: [
+      svgLoader()
+    ],
   },
   css: ['~/assets/styles/main.scss'],
 })

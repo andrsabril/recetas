@@ -3,16 +3,19 @@
 */
 
 $colors: (
-  acent: (
-    300: #DF4040
+  accent: (
+    300: #DF4040,
+    400: #9B2A2A,
   ),
   tip: (
     300: #F8EED2,
-    400: #513B00,
+    400: #E1CB88,
+    500: #513B00,
   ),
   link: (
     300: #FFE6CD,
-    400: #492515,
+    400: #F3B16E,
+    500: #492515,
   ),
   greyscale: (
     100: #fff,
@@ -23,6 +26,11 @@ $colors: (
     600: #000,
   )
 );
+
+
+/* BREAKPOINTS */
+$break-mobile: 840px;
+$break-width: 1200px;
 
 /*
   FONTS
@@ -59,11 +67,17 @@ $font-weight-bold: 600;
 /*
     Radii
 */
-
 $radii-m: 20px;
 
 /*
   Margins
 */
-
 $page-margin: 20px;
+
+/* 
+  Icons
+*/
+$icon-size-s: 16px;
+$icon-size-m: 20px;
+$icon-size-l: 24px;
+$icon-size-xl: 28px;

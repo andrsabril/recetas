@@ -1,0 +1,23 @@
+@mixin transition-default($time: .2s, $to: all) {
+    transition: $to cubic-bezier(0.44, 0.14, 0.28, 1) $time;
+}
+
+// Icons
+@mixin icon-size($size: m) {
+    @if $size == m {
+        width: $icon-size-m;
+        height: $icon-size-m;
+    }
+    @else if $size == s {
+        width: $icon-size-s;
+        height: $icon-size-s;
+    }
+    @else if $size == l {
+        width: $icon-size-l;
+        height: $icon-size-l;
+    }
+    @else if $size == xl {
+        width: $icon-size-xl;
+        height: $icon-size-xl;
+    }
+}

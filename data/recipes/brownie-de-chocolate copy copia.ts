@@ -2,7 +2,7 @@ export const data = {
     title: 'Brownie de chocolate',
     tags: ['Dulce', 'Postre', 'Desayuno', 'Merienda'],
     description: 'Lorem ipsum dolor sit amet consectetur amet consectetur. Lobortis arcu consequat.',
-    preparingTime: 15,
+    preparingTime: 85,
     cookingTime: 60,
     perPerson: {
         default: 6,

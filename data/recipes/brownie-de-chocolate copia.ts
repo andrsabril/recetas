@@ -3,7 +3,7 @@ export const data = {
     tags: ['Dulce', 'Postre', 'Desayuno', 'Merienda'],
     description: 'Lorem ipsum dolor sit amet consectetur amet consectetur. Lobortis arcu consequat.',
     preparingTime: 15,
-    cookingTime: 60,
+    cookingTime: 10,
     perPerson: {
         default: 6,
         min: 4,

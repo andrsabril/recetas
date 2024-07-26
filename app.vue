@@ -1,9 +1,7 @@
 <template>
-  <div>
-    <div>
+    <div id="page-layout">
       <NuxtPage />
     </div>
-  </div>
 </template>
 <style scoped lang="scss">
 </style>
