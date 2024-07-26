@@ -2,7 +2,7 @@
 import svgLoader from 'vite-svg-loader';
 export default defineNuxtConfig({
   app: {
-    baseURL: '/',
+    baseURL: process.env.BASE_URL || '/'
   },
   runtimeConfig: {
     public: {

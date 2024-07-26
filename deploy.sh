@@ -15,7 +15,7 @@ git add -A
 git commit -m 'deploy'
 
 # Empuja a la rama gh-pages
-git push -f git@github.com:andrsabril/recetas.git prod:prod
+git push -f git@github.com:andrsabril/recetas.git main:gh-pages
 
 # Regresa al directorio anterior
 cd -
