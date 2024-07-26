@@ -2,7 +2,7 @@
 import svgLoader from 'vite-svg-loader';
 export default defineNuxtConfig({
   app: {
-    baseURL: '/recetas/',
+    baseURL: '/',
   },
   runtimeConfig: {
     public: {

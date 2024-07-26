@@ -480,6 +480,7 @@
             width: 100%;
             height: auto;
             display: grid;
+            grid-template-rows: 1fr;
             grid-template-columns: 1fr;
             grid-column-gap: 12px;
             grid-row-gap: 12px;

@@ -170,8 +170,7 @@
         // List Display
         &.list-display {
             aspect-ratio: inherit;
-            height: auto;
-            min-height: fit-content;
+            height: 100%;
             background-color: color(greyscale, 200);
             padding: 16px $page-margin;
             display: flex;
@@ -207,6 +206,9 @@
             }
 
             .card-image {
+                position: absolute;
+                top: 0;
+                left: 0;
                 transform: scale(1.2);
                 opacity: 0;
             }
