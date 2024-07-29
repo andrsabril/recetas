@@ -1,55 +1,73 @@
 <template>
     <div class="menu-container">
-        <div class="items-container">
-            <div v-for="(ingredient,index) in uniqueIngredients" :key="index">
-                <MenuCheckbox
-                    :index="index"
-                    :name="ingredient"
-                    :quantity="ingredientCounts[ingredient]"
-                    :checked="activeIngredients.includes(ingredient)"
-                    @update-active-ingredients="updateActiveIngredients"
-                    :disabled="filteredRecipesLength === 0"
+        <div
+            class="menu-background"
+            v-if="activeIngredients.length > 0 && filteredRecipesLength !== 0 || filteredRecipesLength === 0"
+            @click="closeMenuIngredients(true)"
+        >
+        </div>
+        <div
+            class="menu-background"
+            v-else @click="closeMenuIngredients(false)"
+        >
+        </div>
+        <div class="menu-wrap">
+            <div class="items-container">
+                <div v-for="(ingredient,index) in uniqueIngredients" :key="index">
+                    <div
+                        v-if="index === 0 || uniqueIngredients[index][0] !== uniqueIngredients[index - 1][0]"
+                        class="letter-separator"
+                    >
+                        <p>{{ ingredient[0] }}</p>
+                    </div>
+                    <MenuCheckbox
+                        :index="index"
+                        :name="ingredient"
+                        :quantity="ingredientCounts[ingredient]"
+                        :checked="activeIngredients.includes(ingredient)"
+                        @update-active-ingredients="updateActiveIngredients"
+                        :disabled="filteredRecipesLength === 0"
+                    />
+                </div>
+            </div>
+            <div class="buttons-container">
+                <ButtonAction
+                    @click="closeMenuIngredients(true)"
+                    v-if="activeIngredients.length > 0 && filteredRecipesLength !== 0 || filteredRecipesLength === 0"
+                    text="Cancelar"
+                    :number="false"
+                    color="grey"
+                    :icon="false"
+                />
+                <ButtonAction
+                    v-else
+                    @click="closeMenuIngredients(false)"
+                    text="Cancelar"
+                    :number="false"
+                    color="grey"
+                    :icon="false"
+                />
+                <ButtonAction
+                    v-if="activeIngredients.length > 0 && filteredRecipesLength !== 0"
+                    @click="closeMenuIngredients(false)"
+                    text="Buscar"
+                    :number="filteredRecipesLength"
+                    color="accent"
+                    :icon="false"
+                />
+                <ButtonAction
+                    v-if="filteredRecipesLength === 0"
+                    @click="resetIngredients"
+                    text="Sin recetas"
+                    :number="false"
+                    color="grey"
+                    icon="refresh"
                 />
             </div>
-        </div>
-        <div class="buttons-container">
-            <ButtonAction
-                @click="closeMenuIngredients(true)"
-                v-if="activeIngredients.length > 0 && filteredRecipesLength !== 0 || filteredRecipesLength === 0"
-                text="Cancelar"
-                :number="false"
-                color="grey"
-                :icon="false"
-            />
-            <ButtonAction
-                v-else
-                @click="closeMenuIngredients(false)"
-                text="Cancelar"
-                :number="false"
-                color="grey"
-                :icon="false"
-            />
-            <ButtonAction
-                v-if="activeIngredients.length > 0 && filteredRecipesLength !== 0"
-                @click="closeMenuIngredients(false)"
-                text="Buscar"
-                :number="filteredRecipesLength"
-                color="accent"
-                :icon="false"
-            />
-            <ButtonAction
-                v-if="filteredRecipesLength === 0"
-                @click="resetIngredients"
-                text="Sin recetas"
-                :number="false"
-                color="grey"
-                icon="refresh"
-            />
         </div>
     </div>
 </template>
 <script setup>
-    const { formatToLink } = useFormatter();
     import { useIngredientsStore } from '@/stores/ingredients'
     import { useNuxtApp } from '#app'
 
@@ -81,7 +99,12 @@
         return counts;
     });
 
-    const uniqueIngredients = computed(() => [...new Set(Object.keys(ingredientCounts.value))]);
+    const uniqueIngredients = computed(() => {
+        const ingredientsArray = [...new Set(Object.keys(ingredientCounts.value))];
+        ingredientsArray.sort((a, b) => a.localeCompare(b));
+        
+        return ingredientsArray;
+    });
 
     const ingredientsStore = useIngredientsStore()
 
@@ -95,3 +118,19 @@
     };
 
 </script>
+<style scoped lang="scss">
+    .letter-separator {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 12px $page-margin 12px $page-margin;
+
+        p {
+            color: color(greyscale, 400);
+            font-size: fontSize(body, s);
+        }
+    }
+</style>

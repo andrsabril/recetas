@@ -1,4 +1,5 @@
 export const data = {
+    id: 9,
     title: 'Tarta de queso al horno estilo la viña',
     tags: ['Dulce', 'Postre', 'Merienda', 'Tarta', 'Sano', 'Fácil'],
     description: 'Lorem ipsum dolor sit amet consectetur amet consectetur. Lobortis arcu consequat.',

@@ -54,22 +54,21 @@
                 </div>
             </div>
         </div>
-        
-        <div class="recipes-container">
+        <div class="recipes-container" v-if="isClientReady">
             <div class="display-mode">
                 <p>{{ filteredRecipes.length }} Recetas</p>
                 <div class="display-selector-wrap">
                     <div 
                         class="icon-wrap"
                         :class="{'active': cardVisualizationMode}"
-                        @click="cardVisualizationMode = !cardVisualizationMode"
+                        @click="toggleCardVisualizationMode()"
                     >
                         <Icon name="display-card" color="black" :size="cardVisualizationMode ? 'l' : 'xl'" />
                     </div>
                     <div
                         class="icon-wrap"
                         :class="{'active': !cardVisualizationMode}"
-                        @click="cardVisualizationMode = !cardVisualizationMode"
+                        @click="toggleCardVisualizationMode()"
                     >
                         <Icon name="display-list" color="black" :size="!cardVisualizationMode ? 'l' : 'xl'" />
                     </div>
@@ -80,11 +79,7 @@
                     <div v-for="(recipe, index) in filteredRecipes" :key="recipe.title + index">
                     <Card       
                         v-if="filteredRecipes.includes(recipe)"
-                        :title="recipe.title"
-                        :description="recipe.description"
-                        :total-time="recipe.cookingTime + recipe.preparingTime"
-                        :per-person="recipe.perPerson"
-                        :ingredients-length="recipe.ingredients.length"
+                        :data="recipe"
                         :visualization-mode="cardVisualizationMode"
                     />
                 </div>
@@ -98,6 +93,9 @@
                     <p>No hay recetas sobre {{ searching }}</p>
                 </div>
             </Transition>
+        </div>
+        <div class="loading" v-else>
+            Loading..
         </div>
         <Transition name="menu">
             <MenuIngredients
@@ -116,7 +114,7 @@
                 />
             </div>
         </Transition>
-        <div class="btn-filter">
+        <div class="btn-filter right-position">
             <ButtonIcon
                 icon-name="filter"
                 color="white"
@@ -125,7 +123,7 @@
         </div>
         <Transition name="go-top">
             <div
-                class="ingredients-reference" v-if="activeIngredients.length > 0">
+                class="ingredients-reference" v-if="activeIngredients.length > 0 && !showMenuIngredients">
                 <ButtonReference
                     :ingredients-selected="activeIngredients"
                     @click="resetIngredients"
@@ -138,11 +136,23 @@
 <script setup>
     import { useIngredientsStore } from '@/stores/ingredients'
     import { useNuxtApp } from '#app'
+    import Cookies from 'js-cookie';
     const { formatToLink } = useFormatter();
 
     const showMenuIngredients = ref(false);
     const showGoTopButton = ref(false);
-    const cardVisualizationMode = ref(true);
+    const isClientReady = ref(false);
+
+    // Helper to convert cookie string to boolean
+    const stringToBoolean = (str) => str === 'true';
+
+    // Initialize the state based on cookie
+    const cardVisualizationMode = ref(stringToBoolean(Cookies.get('cardVisualizationMode') || 'true'));
+
+    const toggleCardVisualizationMode = () => {
+        cardVisualizationMode.value = !cardVisualizationMode.value;
+        Cookies.set('cardVisualizationMode', cardVisualizationMode.value.toString());
+}   ;
 
     // Acción Botón go to top
     const goTop = () => {
@@ -175,6 +185,7 @@
     // Crear lista de tags recopilando de las recetas
     let allTags = recipes.flatMap(recipe => recipe.tags);
     let uniqueTags = [...new Set(allTags)];
+    uniqueTags = uniqueTags.sort((a, b) => a.localeCompare(b));
     uniqueTags.unshift('Todo');
     let uniqueTagsLength = uniqueTags.length - 1;
 
@@ -229,16 +240,18 @@
     const filteredRecipes = computed(() => {
         const activeIngredientsSet = new Set(ingredientsStore.activeIngredients)
 
-        return recipes.filter(recipe => {
-            const matchesSearch = searching.value.length <= 1 || recipe.title.toLowerCase().includes(searching.value.toLowerCase())
-            const matchesTags = selectedTags.value.includes('Todo') || recipe.tags.some(tag => selectedTags.value.includes(tag))
+        return recipes
+            .filter(recipe => {
+                const matchesSearch = searching.value.length <= 1 || recipe.title.toLowerCase().includes(searching.value.toLowerCase())
+                const matchesTags = selectedTags.value.includes('Todo') || recipe.tags.some(tag => selectedTags.value.includes(tag))
 
-            // Comprobar si la receta contiene todos los ingredientes activos
-            const recipeIngredientsSet = new Set(recipe.ingredients.map(ingredient => formatToLink(ingredient.name)))
-            const containsAllActiveIngredients = [...activeIngredientsSet].every(ingredient => recipeIngredientsSet.has(formatToLink(ingredient)))
+                // Comprobar si la receta contiene todos los ingredientes activos
+                const recipeIngredientsSet = new Set(recipe.ingredients.map(ingredient => formatToLink(ingredient.name)))
+                const containsAllActiveIngredients = [...activeIngredientsSet].every(ingredient => recipeIngredientsSet.has(formatToLink(ingredient)))
 
-            return matchesSearch && matchesTags && containsAllActiveIngredients
-        })
+                return matchesSearch && matchesTags && containsAllActiveIngredients
+            })
+            .sort((a, b) => a.id - b.id)
     });
 
     // Watch for changes in showMenuIngredients to disable/enable scroll
@@ -255,6 +268,8 @@
     })
     onMounted(() => {
         window.addEventListener('scroll', checkScrollPosition);
+        isClientReady.value = true;
+        cardVisualizationMode.value = stringToBoolean(Cookies.get('cardVisualizationMode') || 'true');
     });
     onUnmounted(() => {
         window.removeEventListener('scroll', checkScrollPosition);
@@ -470,8 +485,17 @@
 
                     &.active {
                         opacity: .4;
-                        transform: scale(1);
                     }
+
+                    @media (hover: hover) and (pointer: fine) and (min-width: $break-mobile) {
+                        &:not(.active) {
+                            cursor: pointer;
+                            &:hover {
+                                transform: scale(1.1);
+                            }
+                        }
+                    }
+                        
                 }
             }
         }
@@ -511,9 +535,6 @@
         }
     }
     .btn-filter {
-        position: fixed;
-        right: 16px;
-        bottom: 16px;
 
         @media (min-width: $break-mobile) {
             display: none;
@@ -524,9 +545,15 @@
         right: 16px;
         bottom: calc(16px + (16px / 2) + 50px);
 
+        @media (min-width: $break-mobile) {
+            bottom: 16px;
+        }
         @media (min-width: $break-width) {
             right: calc(((100% - (1200px - 40px)) / 2));
             transform: translateX(calc(100% + 20px));
+        }
+        @media (hover: hover) and (pointer: fine) and (min-width: $break-mobile) {
+            cursor: pointer;
         }
     }
     .ingredients-reference {

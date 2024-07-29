@@ -1,4 +1,5 @@
 export const data = {
+    id: 5,
     title: 'Brownie de chocolate',
     tags: ['Dulce', 'Postre', 'Desayuno', 'Merienda'],
     description: 'Lorem ipsum dolor sit amet consectetur amet consectetur. Lobortis arcu consequat.',

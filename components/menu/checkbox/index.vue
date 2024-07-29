@@ -78,6 +78,12 @@
 
             opacity: 0;
             @include transition-default(.2s);
+
+            @media (min-width: $break-mobile) {
+                & > div {
+                    filter: invert(1);
+                }
+            }
         }
 
         span {
@@ -87,6 +93,28 @@
             margin-top: -4px;
 
             @include transition-default(.2s);
+
+            @media (min-width: $break-mobile) {
+                color: color(greyscale, 400);
+            }
+        }
+
+        @media (min-width: $break-mobile) {
+            border: solid 1px color(greyscale, 500);
+            color: color(greyscale, 600);
+        }
+
+        @media (hover: hover) and (pointer: fine) and (min-width: $break-mobile) {
+            cursor: pointer;
+            &:hover {
+                background-color: color(accent, 300);
+                color: color(greyscale, 100);
+                border-color: color(accent, 300);
+
+                span {
+                    color: color(greyscale, 200);
+                }
+            }
         }
     }
     input {
@@ -96,6 +124,12 @@
             background-color: color(greyscale, 100);
             color: color(greyscale, 600);
             border-color: color(greyscale, 100);
+
+            @media (min-width: $break-mobile) {
+                border-color: color(greyscale, 600);
+                background-color: color(greyscale, 600);
+                color: color(greyscale, 100);
+            }
 
             .icon {
                 width: 20px;

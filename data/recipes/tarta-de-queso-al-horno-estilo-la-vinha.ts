@@ -1,9 +1,10 @@
 export const data = {
-    title: 'Brownie de chocolate',
-    tags: ['Dulce', 'Postre', 'Desayuno', 'Merienda'],
+    id: 1,
+    title: 'Tarta de queso al horno estilo la viña',
+    tags: ['Dulce', 'Postre', 'Merienda', 'Tarta'],
     description: 'Lorem ipsum dolor sit amet consectetur amet consectetur. Lobortis arcu consequat.',
     preparingTime: 15,
-    cookingTime: 10,
+    cookingTime: 60,
     perPerson: {
         default: 6,
         min: 4,
@@ -12,12 +13,12 @@ export const data = {
     },
     ingredients: [
         {
-            name: 'Chocolate',
+            name: 'Queso',
             quantity: 180,
             unit: 'g'
         },
         {
-            name: 'Bicarbonato',
+            name: 'Nata',
             quantity: 1,
             unit: 'Cucharada'
         },
@@ -33,6 +34,26 @@ export const data = {
         },
         {
             name: 'Huevos',
+            quantity: 2,
+            unit: 'u'
+        },
+        {
+            name: 'Tomate',
+            quantity: 1,
+            unit: 'Cucharada'
+        },
+        {
+            name: 'Pollo',
+            quantity: 180,
+            unit: 'g'
+        },
+        {
+            name: 'Cebolla',
+            quantity: 180,
+            unit: 'g'
+        },
+        {
+            name: 'Salsa de soja',
             quantity: 2,
             unit: 'u'
         }

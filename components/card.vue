@@ -2,7 +2,7 @@
     <NuxtLink
         class="card-container"
         :class="[{'list-display': !visualizationMode}, colorCard]"
-        :to="recipeImage"
+        :to="'/recetas/' + recipeLink"
     >   <Transition name="fade">
             <div
                 class="card-image"
@@ -55,32 +55,25 @@
             type: Boolean,
             default: true,
         },
-        title: {
-            type: String,
+        data: {
+            type: Object,
             required: true,
-        },
-        description: {
-            type: [ String, Boolean ],
-            
-        },
-        totalTime: {
-            type: Number,
-            required: true,
-        },
-        perPerson: {
-            type: [ Object, Boolean],
-        },
-        ingredientsLength: {
-            type: Number,
         },
     });
 
-    const recipeImage = computed(() => {
-        return formatToLink(props.title);
+    // Data
+    const title = ref(props.data.title);
+    const description = ref(props.data.description);
+    const totalTime = ref(props.data.cookingTime + props.data.preparingTime);
+    const perPerson = ref(props.data.perPerson);
+    const ingredientsLength = ref(props.data.ingredientsLength);
+
+    const recipeLink = computed(() => {
+        return formatToLink(title.value);
     });
-    const imageSrc = computed(() => `/images/${recipeImage.value}/cover.jpg`);
+    const imageSrc = computed(() => `/images/${recipeLink.value}/cover.jpg`);
     const totalTimeConversion = computed(() => {
-        return props.totalTime < 121 ? props.totalTime : '+120';
+        return totalTime.value < 121 ? totalTime.value : '+120';
     });
     
     const colorCard = computed(() => {
