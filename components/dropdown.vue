@@ -38,6 +38,8 @@
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
+            padding: 20px 0;
+            border-top: solid 1px color(greyscale, 200);
 
             h2 {
                 font-size: fontSize(title, m);
@@ -52,12 +54,12 @@
             height: 0;
             overflow: hidden;
 
-            @include transition-default(.2s);
+            @include transition-default(.4s);
 
             .slot {
                 width: 100%;
                 height: auto;
-                padding-top: 20px;
+                padding: 10px 0 26px 0;
             }
         }
     }

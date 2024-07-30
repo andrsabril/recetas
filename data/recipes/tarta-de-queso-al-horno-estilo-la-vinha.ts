@@ -57,5 +57,16 @@ export const data = {
             quantity: 2,
             unit: 'u'
         }
+    ],
+    preparation: [
+        {
+            title: 'Queso',
+            description: [
+                {p: 'Frase'},
+                {p: 'Frase'},
+                {p: 'Frase'},
+            ],
+            image: false
+        },
     ]
 }

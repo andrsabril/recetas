@@ -45,22 +45,26 @@
             </div> 
           </div>
         </div>
-        <Divider />
-        <Dropdown title="Utensilios">
-          Info
-        </Dropdown>
-        <Divider />
-        <Dropdown title="Ingredientes">
-          Info
-        </Dropdown>
-        <Divider />
-        <Dropdown title="Preparación">
-          Info
-        </Dropdown>
-        <Divider />
-        <Dropdown title="Preparación">
-          Info
-        </Dropdown>
+        <div class="data-container">
+          <Dropdown title="Utensilios" v-if="recipe.utensiles">
+            Info
+          </Dropdown>
+          <Dropdown title="Ingredientes" v-if="recipe.ingredients">
+            <div class="ingredient-list">
+              <Checkbox
+                v-for="(ingredient, index) in recipe.ingredients"
+                :key="ingredient + index"
+                :data="ingredient"
+              />
+            </div>
+          </Dropdown>
+          <Dropdown title="Preparación" v-if="recipe.preparation">
+            Info
+          </Dropdown>
+          <Dropdown title="Decoración" v-if="recipe.decoration">
+            Info
+          </Dropdown>
+        </div>
       </div>
       <div v-else class="error-data">Error en los datos</div>
       <div class="go-back left-position">
@@ -88,7 +92,6 @@
   const minPerPerson = ref(1);
   const maxPerPerson = ref(100);
   const stepPerPerson = ref(1);
-
 
   // Función para navegar a la página anterior o a la home
   function goBack() {
@@ -244,6 +247,16 @@
           }
         }
       }
+    }
+    .data-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .ingredient-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
     }
   }
 
