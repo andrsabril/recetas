@@ -37,5 +37,21 @@ export const data = {
             quantity: 2,
             unit: 'u'
         }
+    ],
+    preparation: [
+        {
+            title: 'Mezclar los huevos con el azucar',
+            description: [
+                { phrase: 'Batir en un bol las yemas con el azucar.' },
+                { image: 'batir-huevos' }
+            ]
+        },
+        {
+            title: 'Mezclar los huevos con el azucar',
+            description: [
+                { phrase: 'Batir en un bol las yemas con el azucar.' },
+                { image: 'batir-huevos' }
+            ]
+        },
     ]
 }

@@ -46,24 +46,24 @@
           </div>
         </div>
         <div class="data-container">
-          <Dropdown title="Utensilios" v-if="recipe.utensiles">
-            Info
-          </Dropdown>
-          <Dropdown title="Ingredientes" v-if="recipe.ingredients">
-            <div class="ingredient-list">
-              <Checkbox
-                v-for="(ingredient, index) in recipe.ingredients"
-                :key="ingredient + index"
-                :data="ingredient"
-              />
-            </div>
-          </Dropdown>
-          <Dropdown title="Preparación" v-if="recipe.preparation">
-            Info
-          </Dropdown>
-          <Dropdown title="Decoración" v-if="recipe.decoration">
-            Info
-          </Dropdown>
+          <Dropdown
+            @click="toggleDropdown(0)"
+            :is-open="openDropdownIndex === 0"
+            title="Ingredientes"
+            display="list"
+            :data="recipe.ingredients"
+            :url="route.params.title"
+            v-if="recipe.ingredients"
+          />
+          <Dropdown
+            @click="toggleDropdown(1)"
+            :is-open="openDropdownIndex === 1"
+            title="Preparación"
+            display="text"
+            :data="recipe.preparation"
+            :url="route.params.title"
+            v-if="recipe.preparation"
+          />
         </div>
       </div>
       <div v-else class="error-data">Error en los datos</div>
@@ -93,8 +93,20 @@
   const maxPerPerson = ref(100);
   const stepPerPerson = ref(1);
 
+  const isOpen = ref(false);
+  const openDropdownIndex = ref(false);
+
+  // DropDown
+  const toggleDropdown = (index) => {
+    if (openDropdownIndex.value === index) {
+      openDropdownIndex.value = null;
+    } else {
+      openDropdownIndex.value = index;
+    }
+  };
+
   // Función para navegar a la página anterior o a la home
-  function goBack() {
+  const goBack = () => {
     if (window.history.length > 1) {
       router.back()
     } else {
@@ -150,6 +162,7 @@
 <style scoped lang="scss">
   .recipe-main {
     width: 100%;
+    max-width: 1000px;
     height: auto;
     min-height: 100dvh;
   }
@@ -252,11 +265,6 @@
       display: flex;
       flex-direction: column;
       gap: 0;
-    }
-    .ingredient-list {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
     }
   }
 

@@ -60,13 +60,18 @@ export const data = {
     ],
     preparation: [
         {
-            title: 'Queso',
+            title: 'Mezclar los huevos con el azucar',
             description: [
-                {p: 'Frase'},
-                {p: 'Frase'},
-                {p: 'Frase'},
-            ],
-            image: false
+                { sentence: 'Batir en un bol las yemas con el azucar.' },
+                { image: 'batir-huevos' }
+            ]
+        },
+        {
+            title: 'Mezclar los huevos con el azucar',
+            description: [
+                { sentence: 'Batir en un bol las yemas con el azucar.' },
+                { image: 'batir-huevos' }
+            ]
         },
     ]
 }

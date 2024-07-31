@@ -3,6 +3,7 @@
         <input type="checkbox"
             :name="data.name"
             :id="data.name"
+            v-model="checked"
         >
         <label :for="data.name">
             <div class="checkbox-icon">
@@ -24,11 +25,17 @@
     </div>
 </template>
 <script setup>
+    const emit = defineEmits(['is-checked']);
     const props = defineProps({
         data: {
             type: Object,
             require: true,
         }
+    });
+    const checked = ref(false);
+
+    watch(checked, (newValue) => {
+        emit('is-checked', { ingredient: props.data, checked: newValue });
     });
 </script>
 <style scoped lang="scss">
