@@ -7,18 +7,16 @@
         >
         <label :for="data.name">
             <div class="checkbox-icon">
-                <Transition name="fade">
-                    <Icon
-                        :key="data.name"
-                        name="check"
-                        color="white"
-                        size="s"
-                    />
-                </Transition>
+                <Icon
+                    :key="data.name"
+                    name="check"
+                    color="white"
+                    size="s"
+                />
             </div>
             <p>{{ data.name }}</p>
             <div class="text">
-                <p class="bold">{{ data.quantity }}</p>
+                <p class="bold">{{ quantityPerPerson }}</p>
                 <p class="medium">{{ data.unit }}</p>
             </div>
         </label>
@@ -30,12 +28,33 @@
         data: {
             type: Object,
             require: true,
+        },
+        defaultPerPerson: {
+            type: Number,
+            require: false,
+        },
+        actualPerPerson: {
+            type: Number,
+            require: false,
+        },
+        resetSignal: {
+            type: Number,
+            required: true,
         }
     });
     const checked = ref(false);
 
+    const quantityPerPerson = computed(() => {
+        const value = Math.round((props.actualPerPerson / props.defaultPerPerson) * props.data.quantity);
+        return value;
+    });
+
     watch(checked, (newValue) => {
         emit('is-checked', { ingredient: props.data, checked: newValue });
+    });
+
+    watch(() => props.resetSignal, () => {
+        checked.value = false;
     });
 </script>
 <style scoped lang="scss">
@@ -46,6 +65,7 @@
             display: flex;
             flex-direction: row;
             align-items: center;
+            padding: 10px 10px 10px 0;
             font-size: fontSize(body, m);
             gap: 10px;
 
@@ -58,8 +78,11 @@
                 border-radius: 8px;
                 border: solid 1px color(greyscale, 600);
 
+                @include transition-default(.2s);
+
                 & > div {
                     opacity: 0;
+                    transform: scale(0);
                 }
             }
 
@@ -87,7 +110,8 @@
                     border-color: color(accent, 300);
 
                     & > div {
-                        opacity: 1
+                        opacity: 1;
+                        transform: scale(1);
                     }
                 }
             }

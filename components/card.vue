@@ -39,7 +39,7 @@
                     <p>{{ perPerson.min }} a {{ perPerson.max }}</p>
                 </div>
                 <div class="item-data">
-                    <Icon name="ingredients" :color="colorCard" size="m" />
+                    <Icon name="shop-list" :color="colorCard" size="m" />
                     <p>{{ ingredientsLength }}</p>
                 </div>
         </div>
@@ -66,7 +66,7 @@
     const description = ref(props.data.description);
     const totalTime = ref(props.data.cookingTime + props.data.preparingTime);
     const perPerson = ref(props.data.perPerson);
-    const ingredientsLength = ref(props.data.ingredientsLength);
+    const ingredientsLength = ref(props.data.ingredients.length);
 
     const recipeLink = computed(() => {
         return formatToLink(title.value);

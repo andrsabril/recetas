@@ -40,7 +40,8 @@ export const data = {
         {
             name: 'Tomate',
             quantity: 1,
-            unit: 'Cucharada'
+            unit: 'Cucharada',
+            hasReference: 'Brownie de chocolate',
         },
         {
             name: 'Pollo',
@@ -55,7 +56,8 @@ export const data = {
         {
             name: 'Salsa de soja',
             quantity: 2,
-            unit: 'u'
+            unit: 'u',
+            hasReference: 'Brownie de chocolate',
         }
     ],
     preparation: [

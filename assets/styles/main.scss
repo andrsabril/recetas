@@ -95,6 +95,29 @@ body {
     opacity: 0;  
 }
 
+
+.go-top-number-enter-active {
+    transform: translateY(0);
+    @include transition-default(.4s);
+    transition-delay: .2s;
+}
+.go-top-number-leave-active {
+    transform: translateY(100%);
+    opacity: 0;
+    position: absolute;
+    @include transition-default(.4s);
+}
+.go-top-number-enter-from {
+    transition-delay: .2s;
+    transform: translateY(100%);
+    opacity: 0;
+}
+.go-top-number-leave-to {
+    
+    transform: translateY(-100%);
+    opacity: 0;
+}
+
 /* COMPONENTS */
 
 // Buttons

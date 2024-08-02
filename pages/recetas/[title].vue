@@ -22,16 +22,18 @@
               <div
                 class="picker-btn"
                 @click="perPersonUpdate('minus')"
+                ref="btnMinusRef"
                 :class="{'disabled': actualPerPerson === minPerPerson}"
               >
                 <Icon name="minus" color="black" size="s"/>
               </div>
-              <Transition name="go-top">
+              <Transition name="go-top-number">
                 <p class="value" :key="actualPerPerson">{{ actualPerPerson }}</p>
               </Transition>
               <div
                 class="picker-btn"
                 @click="perPersonUpdate('plus')"
+                ref="btnPlusRef"
                 :class="{'disabled': actualPerPerson === maxPerPerson}"
               >
                 <Icon name="plus" color="black" size="s"/>
@@ -46,17 +48,19 @@
           </div>
         </div>
         <div class="data-container">
-          <Dropdown
-            @click="toggleDropdown(0)"
+          <RecipeDropdown
+            @toggle-dropdown="toggleDropdown(0)"
             :is-open="openDropdownIndex === 0"
             title="Ingredientes"
             display="list"
+            :actual-per-person="actualPerPerson"
+            :default-per-person="recipe.perPerson.default"
             :data="recipe.ingredients"
             :url="route.params.title"
             v-if="recipe.ingredients"
           />
-          <Dropdown
-            @click="toggleDropdown(1)"
+          <RecipeDropdown
+            @toggle-dropdown="toggleDropdown(1)"
             :is-open="openDropdownIndex === 1"
             title="Preparación"
             display="text"
@@ -93,8 +97,10 @@
   const maxPerPerson = ref(100);
   const stepPerPerson = ref(1);
 
-  const isOpen = ref(false);
   const openDropdownIndex = ref(false);
+  const btnMinusRef = ref();
+  const btnPlusRef = ref();
+  
 
   // DropDown
   const toggleDropdown = (index) => {
@@ -136,15 +142,26 @@
       // Si es el botón de menos
       if( actual > minPerPerson.value && (actual + stepPerPerson.value) >= minPerPerson.value) {
         actualPerPerson.value = actual - stepPerPerson.value;
+        addAndRemoveClass(btnMinusRef);
       }
 
     }
     else if(context == 'plus') {
       if( actual < maxPerPerson.value && (actual + stepPerPerson.value) <= maxPerPerson.value) {
         actualPerPerson.value = actual + stepPerPerson.value;
+        addAndRemoveClass(btnPlusRef);
       }
     }
   }
+
+  const addAndRemoveClass = (buttonRef) => {
+    if (buttonRef.value) {
+        buttonRef.value.classList.add('press');
+        setTimeout(() => {
+            buttonRef.value.classList.remove('press');
+        }, 300); 
+    }
+};
 
   onMounted(async () => {
     const title  = route.params.title;
@@ -244,6 +261,7 @@
           }
 
           .picker-btn {
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -251,11 +269,30 @@
             height: 36px;
             border-radius: 100px;
             background-color: color(greyscale, 200);
+            overflow: hidden;
 
-            @include transition-default(.2s);
+            @include transition-default(.2s, background-color);
 
             &.disabled {
               opacity: .3;
+            }
+
+            &.press::before {
+              content: '';
+              width: 100%;
+              height: 100%;
+              position: absolute;
+              top: 0;
+              left: 0;
+              transform: scale(0);
+              background-color: color(greyscale, 300);
+              border-radius: 100%;
+              opacity: 0;
+            
+              animation-name: pressButton;
+              animation-duration: .4s;
+              animation-timing-function: ease-out;
+              animation-iteration-count: 1;
             }
           }
         }
@@ -265,6 +302,21 @@
       display: flex;
       flex-direction: column;
       gap: 0;
+    }
+  }
+
+  @keyframes pressButton {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1);
+      opacity: .6;
+    }
+    100% {
+      transform: scale(2);
+      opacity: 0;
     }
   }
 
