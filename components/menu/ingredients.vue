@@ -17,6 +17,7 @@
                     <div
                         v-if="index === 0 || uniqueIngredients[index][0] !== uniqueIngredients[index - 1][0]"
                         class="letter-separator"
+                        :id="ingredient[0]"
                     >
                         <p>{{ ingredient[0] }}</p>
                     </div>

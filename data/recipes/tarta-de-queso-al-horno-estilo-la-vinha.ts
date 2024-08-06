@@ -72,7 +72,12 @@ export const data = {
             title: 'Mezclar los huevos con el azucar',
             description: [
                 { sentence: 'Batir en un bol las yemas con el azucar.' },
-                { image: 'batir-huevos' }
+                { image: 'batir-huevos' },
+                { carousel: [
+                    { image: 'batir-huevos' },
+                    { image: 'batir-huevos' },
+                    { image: 'batir-huevos' },
+                ] },
             ]
         },
     ]

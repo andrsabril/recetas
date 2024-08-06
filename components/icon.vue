@@ -39,6 +39,7 @@
     .m { @include icon-size(m); }
     .l { @include icon-size(l); }
     .xl { @include icon-size(xl); }
+    .xxl { @include icon-size(xxl); }
 
     // Color
     .fill-current {
@@ -49,6 +50,7 @@
       &.white { fill: color(greyscale, 100); }
       &.grey-light { fill: color(greyscale, 300); }
       &.grey { fill: color(greyscale, 400); }
+      &.grey-dark { fill: color(greyscale, 500); }
       &.black { fill: color(greyscale, 600); }
       &.tip { fill: color(tip, 500); }
       &.link { fill: color(link, 500); }

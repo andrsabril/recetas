@@ -1,14 +1,14 @@
 <template>
     <div class="checkbox">
         <input type="checkbox"
-            :name="data.name"
-            :id="data.name"
+            :name="id"
+            :id="id"
             v-model="checked"
         >
-        <label :for="data.name">
+        <label :for="id" :class="{'shop-list' : !defaultPerPerson && !actualPerPerson}">
             <div class="checkbox-icon">
                 <Icon
-                    :key="data.name"
+                    :key="id"
                     name="check"
                     color="white"
                     size="s"
@@ -27,30 +27,44 @@
     const props = defineProps({
         data: {
             type: Object,
-            require: true,
+            required: true,
+        },
+        id: {
+            type: String,
+            required: true,
         },
         defaultPerPerson: {
             type: Number,
-            require: false,
+            required: false,
         },
         actualPerPerson: {
             type: Number,
-            require: false,
+            required: false,
         },
         resetSignal: {
             type: Number,
-            required: true,
+            required: false,
+        },
+        checked: {
+            type: Boolean,
+            required: false,
         }
     });
-    const checked = ref(false);
+    const checked = ref(props.checked ? props.checked : false);
 
     const quantityPerPerson = computed(() => {
-        const value = Math.round((props.actualPerPerson / props.defaultPerPerson) * props.data.quantity);
-        return value;
+        if(props.actualPerPerson && props.defaultPerPerson) {
+            const value = Math.round((props.actualPerPerson / props.defaultPerPerson) * props.data.quantity);
+            return value;
+        }
+        else {
+            return props.data.quantity;
+        }
+        
     });
 
     watch(checked, (newValue) => {
-        emit('is-checked', { ingredient: props.data, checked: newValue });
+        emit('is-checked', { ingredient: props.data, quantity: quantityPerPerson.value, id: props.id, checked: newValue });
     });
 
     watch(() => props.resetSignal, () => {
@@ -99,12 +113,32 @@
             p.bold {
                 font-weight: $font-weight-bold;
             }
+
+            &.shop-list {
+                p {
+                    position: relative;
+
+                    &::before {
+                        content: '';
+                        position: absolute;
+                        top: 50%;
+                        left: 0;
+                        transform: translateY(-50%);
+                        width: 0;
+                        height: 1px;
+                        background-color: color(greyscale, 600);
+
+                        @include transition-default(.2s);
+                    }
+                }
+            }
         }
         input {
             display: none;
 
             &:checked + label,
             &.active + label {
+
                 .checkbox-icon {
                     background-color: color(accent, 300);
                     border-color: color(accent, 300);
@@ -112,6 +146,12 @@
                     & > div {
                         opacity: 1;
                         transform: scale(1);
+                    }
+                }
+
+                &.shop-list {
+                    p::before {
+                        width: 100%;
                     }
                 }
             }

@@ -6,8 +6,7 @@
             :color="colorIcon" 
             size="m"
         />
-        <p v-if="number">{{ number }}</p>
-        <p>{{ text }}</p>
+        <p>{{ text }}<span v-if="number"> ({{ number }})</span></p>
     </div>
 </template>
 <script setup>
@@ -57,6 +56,10 @@
         padding: 2px 16px 0 16px;
 
         @include transition-default(.2s);
+
+        p span {
+            font-size: fontSize(body, s);
+        }
 
         &.white {
            color: color(greyscale, 600);

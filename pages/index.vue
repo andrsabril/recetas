@@ -1,136 +1,130 @@
 <template>
-    <div id="main">
-        <div class="top-bar">
-            <div class="filter-search">
-                <div class="input-wrap">
-                    <div class="icon-position">
-                        <Icon
-                            name="search"
-                            color="black"
-                            size="m"
-                        />
-                    </div>
-                    <input v-model="searching" type="search" placeholder="Buscar receta">
-                    <div
-                        v-if="searching.length > 3"
-                        @click="resetSearch"
-                        class="reset-input"
-                    >
-                        <Icon
-                            name="cancel"
-                            color="black"
-                            size="m"
-                        />
-                    </div>
-                </div>
+    <div :style="{width: '100%'}">
+        <Transition name="fade">
+            <div class="loading" v-if="!isClientReady">
+                <Loading />
             </div>
-            <div class="btn-filter">
-                <ButtonAction
-                    @click="showMenuIngredients = true"
-                    text="Ingredientes"
-                    :number="false"
-                    color="grey-light"
-                    icon="filter"
-                />
-            </div>
-        </div>
-        <div class="filters-tag">
-            <div class="tags">
-                <div
-                    class="tag"
-                    v-for="(tag, index) in uniqueTags"
-                    :key="tag + index"
-                >
-                    <input
-                        type="checkbox"
-                        :id="formatToLink(tag)"
-                        name="filters"
-                        :checked="selectedTags.includes(tag)"
-                        :data-checked="selectedTags.includes(tag)"
-                        :class="{'checked': selectedTags.includes(tag)}"
-                        @change="toggleTag(tag)"
-                    >
-                    <label :for="formatToLink(tag)">{{ tag }}</label>
-                </div>
-            </div>
-        </div>
-        <div class="recipes-container" v-if="isClientReady">
-            <div class="display-mode">
-                <p>{{ filteredRecipes.length }} Recetas</p>
-                <div class="display-selector-wrap">
-                    <div 
-                        class="icon-wrap"
-                        :class="{'active': cardVisualizationMode}"
-                        @click="toggleCardVisualizationMode()"
-                    >
-                        <Icon name="display-card" color="black" :size="cardVisualizationMode ? 'l' : 'xl'" />
-                    </div>
-                    <div
-                        class="icon-wrap"
-                        :class="{'active': !cardVisualizationMode}"
-                        @click="toggleCardVisualizationMode()"
-                    >
-                        <Icon name="display-list" color="black" :size="!cardVisualizationMode ? 'l' : 'xl'" />
+        </Transition>
+        <div id="main">
+            <div class="top-bar">
+                <div class="filter-search">
+                    <div class="input-wrap">
+                        <div class="icon-position">
+                            <Icon
+                                name="search"
+                                color="black"
+                                size="m"
+                            />
+                        </div>
+                        <input v-model="searching" type="search" placeholder="Buscar receta">
+                        <div
+                            v-if="searching.length > 3"
+                            @click="resetSearch"
+                            class="reset-input"
+                        >
+                            <Icon
+                                name="cancel"
+                                color="black"
+                                size="m"
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="card-grid" v-if="filteredRecipes.length > 0">
-                <TransitionGroup name="cards">
-                    <div v-for="(recipe, index) in filteredRecipes" :key="recipe.title + index">
-                    <Card       
-                        v-if="filteredRecipes.includes(recipe)"
-                        :data="recipe"
-                        :visualization-mode="cardVisualizationMode"
+                <div class="btn-filter">
+                    <ButtonAction
+                        @click="showMenuIngredients = true"
+                        text="Ingredientes"
+                        :number="false"
+                        color="grey-light"
+                        icon="filter"
                     />
                 </div>
-                </TransitionGroup>
             </div>
-            <Transition name="fade">
+            <div class="filters-tag">
+                <div class="tags">
+                    <div
+                        class="tag"
+                        v-for="(tag, index) in uniqueTags"
+                        :key="tag + index"
+                    >
+                        <input
+                            type="checkbox"
+                            :id="formatToLink(tag)"
+                            name="filters"
+                            :checked="selectedTags.includes(tag)"
+                            :data-checked="selectedTags.includes(tag)"
+                            :class="{'checked': selectedTags.includes(tag)}"
+                            @change="toggleTag(tag)"
+                        >
+                        <label :for="formatToLink(tag)">{{ tag }}</label>
+                    </div>
+                </div>
+            </div>
+            <div class="recipes-container" v-if="isClientReady">
+                <div class="display-mode">
+                    <p>{{ filteredRecipes.length }} Recetas</p>
+                    <div class="display-selector-wrap">
+                        <div 
+                            class="icon-wrap"
+                            :class="{'active': cardVisualizationMode}"
+                            @click="toggleCardVisualizationMode()"
+                        >
+                            <Icon name="display-card" color="black" :size="cardVisualizationMode ? 'm' : 'l'" />
+                        </div>
+                        <div
+                            class="icon-wrap"
+                            :class="{'active': !cardVisualizationMode}"
+                            @click="toggleCardVisualizationMode()"
+                        >
+                            <Icon name="display-list" color="black" :size="!cardVisualizationMode ? 'm' : 'l'" />
+                        </div>
+                    </div>
+                </div>
+                <div class="card-grid" v-if="filteredRecipes.length > 0">
+                    <TransitionGroup name="cards">
+                        <div v-for="(recipe, index) in filteredRecipes" :key="recipe.title + index">
+                        <Card       
+                            v-if="filteredRecipes.includes(recipe)"
+                            :data="recipe"
+                            :visualization-mode="cardVisualizationMode"
+                        />
+                    </div>
+                    </TransitionGroup>
+                </div>
+                <Transition name="fade">
+                    <div
+                        v-if="filteredRecipes.length <= 0"
+                        class="empty-state"
+                    >
+                        <p>No hay recetas sobre {{ searching }}</p>
+                    </div>
+                </Transition>
+            </div>
+            <Transition name="menu">
+                <MenuIngredients
+                    v-if="showMenuIngredients"
+                    :filteredRecipesLength="filteredRecipes.length"
+                    @close-menu-ingredients="handleCloseMenuIngredients"
+                    @resetIngredients="resetIngredients"
+                />
+            </Transition>
+            <div class="btn-filter right-position">
+                <ButtonIcon
+                    icon-name="filter"
+                    color="white"
+                    @click="showMenuIngredients = true"
+                />
+            </div>
+            <Transition name="go-top">
                 <div
-                    v-if="filteredRecipes.length <= 0"
-                    class="empty-state"
-                >
-                    <p>No hay recetas sobre {{ searching }}</p>
+                    class="ingredients-reference" v-if="activeIngredients.length > 0 && !showMenuIngredients">
+                    <ButtonReference
+                        :ingredients-selected="activeIngredients"
+                        @click="resetIngredients"
+                    />
                 </div>
             </Transition>
         </div>
-        <div class="loading" v-else>
-            Loading..
-        </div>
-        <Transition name="menu">
-            <MenuIngredients
-                v-if="showMenuIngredients"
-                :filteredRecipesLength="filteredRecipes.length"
-                @close-menu-ingredients="handleCloseMenuIngredients"
-                @resetIngredients="resetIngredients"
-            />
-        </Transition>
-        <Transition name="go-top">
-            <div class="btn-go-top" v-if="showGoTopButton">
-                <ButtonIcon
-                    icon-name="arrow-up"
-                    color="black"
-                    @click="goTop"
-                />
-            </div>
-        </Transition>
-        <div class="btn-filter right-position">
-            <ButtonIcon
-                icon-name="filter"
-                color="white"
-                @click="showMenuIngredients = true"
-            />
-        </div>
-        <Transition name="go-top">
-            <div
-                class="ingredients-reference" v-if="activeIngredients.length > 0 && !showMenuIngredients">
-                <ButtonReference
-                    :ingredients-selected="activeIngredients"
-                    @click="resetIngredients"
-                />
-            </div>
-        </Transition>
-       
     </div>
 </template>
 <script setup>
@@ -140,7 +134,6 @@
     const { formatToLink } = useFormatter();
 
     const showMenuIngredients = ref(false);
-    const showGoTopButton = ref(false);
     const isClientReady = ref(false);
 
     // Helper to convert cookie string to boolean
@@ -152,26 +145,8 @@
     const toggleCardVisualizationMode = () => {
         cardVisualizationMode.value = !cardVisualizationMode.value;
         Cookies.set('cardVisualizationMode', cardVisualizationMode.value.toString());
-}   ;
+    };
 
-    // Acción Botón go to top
-    const goTop = () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    };
-    // Aparición Botón go to top
-    const checkScrollPosition = () => {
-        const scrollPosition = window.scrollY || document.documentElement.scrollTop;
-        const viewportHeight = window.innerHeight;
-        
-        if (scrollPosition > viewportHeight * .6) {
-            showGoTopButton.value = true;
-        } else {
-            showGoTopButton.value = false;
-        }
-    };
 
     const ingredientsStore = useIngredientsStore();
 
@@ -267,18 +242,13 @@
         document.body.classList.remove('no-scroll')
     })
     onMounted(() => {
-        window.addEventListener('scroll', checkScrollPosition);
         isClientReady.value = true;
         cardVisualizationMode.value = stringToBoolean(Cookies.get('cardVisualizationMode') || 'true');
     });
-    onUnmounted(() => {
-        window.removeEventListener('scroll', checkScrollPosition);
-    });
-
 </script>
 <style scoped lang="scss">
     #main {
-        padding: 40px 0;
+        padding: 20px 0;
         width: 100%;
         max-width: 1200px;
         height: auto;
@@ -454,7 +424,7 @@
         flex-direction: column;
         flex-wrap: wrap;
         gap: 12px;
-        padding: 0 $page-margin;
+        padding: 0 $page-margin 120px $page-margin;
         margin-top: 8px;
 
         .display-mode {
@@ -535,25 +505,10 @@
         }
     }
     .btn-filter {
+        z-index: 2;
 
         @media (min-width: $break-mobile) {
             display: none;
-        }
-    }
-    .btn-go-top {
-        position: fixed;
-        right: 16px;
-        bottom: calc(16px + (16px / 2) + 50px);
-
-        @media (min-width: $break-mobile) {
-            bottom: 16px;
-        }
-        @media (min-width: $break-width) {
-            right: calc(((100% - (1200px - 40px)) / 2));
-            transform: translateX(calc(100% + 20px));
-        }
-        @media (hover: hover) and (pointer: fine) and (min-width: $break-mobile) {
-            cursor: pointer;
         }
     }
     .ingredients-reference {

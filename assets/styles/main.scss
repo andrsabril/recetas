@@ -95,7 +95,7 @@ body {
     opacity: 0;  
 }
 
-
+// Number
 .go-top-number-enter-active {
     transform: translateY(0);
     @include transition-default(.4s);
@@ -113,9 +113,26 @@ body {
     opacity: 0;
 }
 .go-top-number-leave-to {
-    
     transform: translateY(-100%);
     opacity: 0;
+}
+
+// Toast
+.toast-enter-active {
+    transform: translateY(0);
+    @include transition-default(.4s);
+    transition-delay: .2s;
+}
+.toast-leave-active {
+    transform: translateY(calc(-100% - ($page-margin / 2)));
+    @include transition-default(.4s);
+}
+.toast-enter-from {
+    transition-delay: .2s;
+    transform: translateY(calc(-100% - ($page-margin / 2)));
+}
+.toast-leave-to {
+    transform: translateY(calc(-100% - ($page-margin / 2)));
 }
 
 /* COMPONENTS */
@@ -163,6 +180,10 @@ body {
         height: 100%;
         background-color: color(greyscale, 600);
         overflow: hidden;
+
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
 
         @media (min-width: $break-mobile) {
             width: 600px;

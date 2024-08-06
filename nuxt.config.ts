@@ -16,8 +16,12 @@ export default defineNuxtConfig({
   pinia: {
     storesDirs: ['./stores/**', './custom-folder/stores/**'],
   },
+  build: {
+    transpile: ['vue3-carousel'],
+  },
   plugins: [
     '~/plugins/loadRecipes.js',
+    '~/plugins/vueCarousel.js',
   ],
   vite: {
     css: {
@@ -31,5 +35,9 @@ export default defineNuxtConfig({
       svgLoader()
     ],
   },
-  css: ['~/assets/styles/main.scss'],
+  css: [
+    '~/assets/styles/main.scss',
+    'vue3-carousel/dist/carousel.css',
+
+  ],
 })

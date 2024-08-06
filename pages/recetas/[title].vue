@@ -1,14 +1,21 @@
 <template>
+  <div :style="{width: '100%'}">
+    <Transition name="fade">
+        <div class="loading" v-if="loading">
+            <Loading />
+        </div>
+    </Transition>
     <div class="recipe-main">
-      <div v-if="loading" class="loading">Loading...</div>
-      <div v-else-if="recipe" class="recipe-container">
-        <h1>{{ recipe.title}}</h1>
-        <div
-          class="cover-image"
-          :style="{backgroundImage: `url('${imageSrc}')`}"
-        ></div>
-        <p class="description">{{ recipe.description }}</p>
-        <Divider />
+      <div v-if="recipe && !loading" class="recipe-container">
+        <div class="header">
+          <h1>{{ recipe.title}}</h1>
+          <div
+            class="cover-image"
+            :style="{backgroundImage: `url('${imageSrc}')`}"
+          ></div>
+          <p class="description">{{ recipe.description }}</p>
+        </div>
+        <Divider :isPadding="true" />
         <div class="first-data">
           <div class="item">
             <p class="name">Preparación</p>
@@ -49,24 +56,42 @@
         </div>
         <div class="data-container">
           <RecipeDropdown
+            v-if="recipe.utils"
             @toggle-dropdown="toggleDropdown(0)"
             :is-open="openDropdownIndex === 0"
+            title="Utensilios"
+            display="text"
+            :data="recipe.utils"
+            :url="route.params.title"
+          />
+          <RecipeDropdown
+            v-if="recipe.ingredients"
+            @toggle-dropdown="toggleDropdown(1)"
+            :is-open="openDropdownIndex === 1"
             title="Ingredientes"
             display="list"
             :actual-per-person="actualPerPerson"
             :default-per-person="recipe.perPerson.default"
             :data="recipe.ingredients"
             :url="route.params.title"
-            v-if="recipe.ingredients"
           />
           <RecipeDropdown
-            @toggle-dropdown="toggleDropdown(1)"
-            :is-open="openDropdownIndex === 1"
+            v-if="recipe.preparation"
+            @toggle-dropdown="toggleDropdown(2)"
+            :is-open="openDropdownIndex === 2"
             title="Preparación"
             display="text"
             :data="recipe.preparation"
             :url="route.params.title"
-            v-if="recipe.preparation"
+          />
+          <RecipeDropdown
+            v-if="recipe.presentation"
+            @toggle-dropdown="toggleDropdown(3)"
+            :is-open="openDropdownIndex === 3"
+            title="Presentación"
+            display="text"
+            :data="recipe.presentations"
+            :url="route.params.title"
           />
         </div>
       </div>
@@ -84,7 +109,8 @@
             color="black"
         />
       </div>
-  </div>
+    </div>
+  </div> 
 </template>
 <script setup>
   const route = useRoute();
@@ -154,14 +180,15 @@
     }
   }
 
+  // Button animation
   const addAndRemoveClass = (buttonRef) => {
     if (buttonRef.value) {
         buttonRef.value.classList.add('press');
         setTimeout(() => {
             buttonRef.value.classList.remove('press');
         }, 300); 
-    }
-};
+      }
+  };
 
   onMounted(async () => {
     const title  = route.params.title;
@@ -185,32 +212,39 @@
   }
   .recipe-container {
     width: 100%;
-    padding: 20px $page-margin 120px $page-margin;
+    padding: 20px 0 120px 0;
     display: flex;
     flex-direction: column;
     gap: 20px;
 
-    h1 {
-      font-size: fontSize(title, l);
-      line-height: $font-line-height-s;
-      font-weight: $font-weight-medium;
-      margin-bottom: 6px;
-    }
+    .header {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 0 $page-margin;
 
-    .cover-image {
-      width: 100%;
-      height: auto;
-      aspect-ratio: 4/2.5;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-      border-radius: $radii-m;
-      margin-bottom: 6px;
-    }
+      h1 {
+        font-size: fontSize(title, l);
+        line-height: $font-line-height-s;
+        font-weight: $font-weight-medium;
+        margin-bottom: 6px;
+      }
 
-    p.description {
-      font-size: fontSize(body, s);
-      line-height: $font-line-height-m;
+      .cover-image {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4/2.5;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        border-radius: $radii-m;
+        margin-bottom: 6px;
+      }
+
+      p.description {
+        font-size: fontSize(body, s);
+        line-height: $font-line-height-m;
+      }
     }
 
     .first-data {
@@ -221,6 +255,7 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: 16px;
+      padding: 0 $page-margin;
 
       .item {
         display: flex;
@@ -303,6 +338,9 @@
       flex-direction: column;
       gap: 0;
     }
+  }
+  .open-list {
+    z-index: 2;
   }
 
   @keyframes pressButton {

@@ -20,4 +20,8 @@
         width: $icon-size-xl;
         height: $icon-size-xl;
     }
+    @else if $size == xxl {
+        width: $icon-size-xxl;
+        height: $icon-size-xxl;
+    }
 }
