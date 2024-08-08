@@ -175,14 +175,26 @@
             &.black {
                 background-color: color(greyscale, 200);
                 color: color(greyscale, 600);
+
+                h3 {
+                    color: color(greyscale, 600);
+                }
             }
             &.tip {
                 background-color: color(tip, 300);
                 color: color(tip, 500);
+
+                h3 {
+                    color: color(tip, 500);
+                }
             }
             &.link {
                 background-color: color(link, 300);
                 color: color(link, 500);
+
+                h3 {
+                    color: color(link, 500);
+                }
             }
 
 

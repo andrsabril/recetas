@@ -115,6 +115,11 @@
         }
     }
 
+    // Watchers para actualizar las listas locales cuando cambian en el store
+    watch(() => shopListStore.shopList, (newList) => {
+        unCheckedIngredientsCookie.value = newList;
+    }, { immediate: true });
+
     // Watch for changes in openAddIngredientMenu to disable/enable scroll
     watch(() => openAddIngredientMenu.value, (newVal) => {
         if (newVal) {

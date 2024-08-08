@@ -2,28 +2,72 @@
     COLOR
 */
 
+// ROOT
+
+:root, body[data-theme='light'] {
+  --color-accent-300: #DF4040;
+  --color-accent-400: #9B2A2A;
+
+  --color-tip-300: #F8EED2;
+  --color-tip-400: #E1CB88;
+  --color-tip-500: #513B00;
+
+  --color-link-300: #FFE6CD;
+  --color-link-400: #F3B16E;
+  --color-link-500: #492515;
+
+  --color-greyscale-100: #fff;
+  --color-greyscale-200: #EBEBEB;
+  --color-greyscale-300: #C4C4C4;
+  --color-greyscale-400: #9C9C9C;
+  --color-greyscale-500: #525252;
+  --color-greyscale-600: #000;
+}
+
+body[data-theme='dark'] {
+  --color-accent-300: #DF4040;
+  --color-accent-400: #9B2A2A;
+
+  --color-tip-300: #F8EED2;
+  --color-tip-400: #E1CB88;
+  --color-tip-500: #513B00;
+
+  --color-link-300: #FFE6CD;
+  --color-link-400: #F3B16E;
+  --color-link-500: #492515;
+
+  --color-greyscale-600: #fff;
+  --color-greyscale-500: #EBEBEB;
+  --color-greyscale-400: #C4C4C4;
+  --color-greyscale-300: #9C9C9C;
+  --color-greyscale-200: #525252;
+  --color-greyscale-100: #000;
+}
+
+// FUNCTION
+
 $colors: (
   accent: (
-    300: #DF4040,
-    400: #9B2A2A,
+    300: var(--color-accent-300),
+    400: var(--color-accent-400),
   ),
   tip: (
-    300: #F8EED2,
-    400: #E1CB88,
-    500: #513B00,
+    300: var(--color-tip-300),
+    400: var(--color-tip-400),
+    500: var(--color-tip-500),
   ),
   link: (
-    300: #FFE6CD,
-    400: #F3B16E,
-    500: #492515,
+    300: var(--color-link-300),
+    400: var(--color-link-400),
+    500: var(--color-link-500),
   ),
   greyscale: (
-    100: #fff,
-    200: #EBEBEB,
-    300: #C4C4C4,
-    400: #9C9C9C,
-    500: #525252,
-    600: #000,
+    100: var(--color-greyscale-100),
+    200: var(--color-greyscale-200),
+    300: var(--color-greyscale-300),
+    400: var(--color-greyscale-400),
+    500: var(--color-greyscale-500),
+    600: var(--color-greyscale-600),
   )
 );
 

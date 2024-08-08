@@ -65,6 +65,8 @@
 </template>
 <script setup>
     const emit = defineEmits(['close-add-ingredient']);
+    const shopListStore = useShopListStore();
+    const listIngredientsCookie = ref([])
 
     const ingredientName = ref('');
     const ingredientQuantity = ref();
@@ -97,14 +99,26 @@
         }
     });
 
+    // Generar un ID unico
+    function generateUniqueId() {
+        return `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+    }
+
     const addIngredient = () => {
         if (isFormValid.value) {
             // Lógica para añadir el ingrediente
-            console.log('Ingrediente añadido:', {
+            const existingList = listIngredientsCookie.value;
+            const updatedList = [...existingList];
+
+            let newIngredientData = {
+                id: generateUniqueId(),
                 name: ingredientName.value,
                 quantity: ingredientQuantity.value,
                 unit: ingredientUnit.value,
-            });
+            };
+            updatedList.push(newIngredientData);
+
+            shopListStore.updateShopList(updatedList);
             closeAddIngredient();
         }
     };
@@ -112,6 +126,11 @@
     const closeAddIngredient = () => {
         emit('close-add-ingredient', {});
     };
+
+    onMounted(() => {
+        shopListStore.loadShopList();
+        listIngredientsCookie.value = shopListStore.shopList;
+    });
 </script>
 <style lang="scss" scoped>
 .pop-up-wrap {
