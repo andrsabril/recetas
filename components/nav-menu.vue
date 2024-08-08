@@ -5,7 +5,7 @@
         </NuxtLink>
         <NuxtLink :class="{'disabled': route.path == '/lista-de-la-compra'}" class="icon-wrap" to="/lista-de-la-compra">
             <Icon name="shop-list" size="m" :color="route.path == '/lista-de-la-compra' ? 'grey' : 'black'"/>
-            <div class="notice" v-if="shopList.length > 0">{{ shopList.length }}</div>
+            <div class="notice" v-if="checkedIngredientsCookie.length > 0">{{ checkedIngredientsCookie.length }}</div>
         </NuxtLink>
     </nav>
 </template>
@@ -15,22 +15,23 @@
 
     const route = useRoute();
     const shopListStore = useShopListStore();
-    const shopList = ref([]);
+    const checkedIngredientsCookie = ref([]);
 
     // Cargar la lista de la tienda cuando se monta el componente
     onMounted(() => {
         shopListStore.loadShopList(); // Cargar los datos de las cookies al store
-        shopList.value = shopListStore.shopList; // Sincronizar localmente con el store
+        checkedIngredientsCookie.value = shopListStore.shopList; // Sincronizar localmente con el store
     });
 
     // Observa cambios en el store y actualiza la referencia local
     watch(() => shopListStore.shopList, (newList) => {
-        shopList.value = newList;
+        checkedIngredientsCookie.value = newList;
     }, { immediate: true });
 </script>
 <style lang="scss" scoped>
     nav {
         width: 100%;
+        max-width: 1200px;
         overflow: hidden;
         padding: $page-margin;
         display: flex;

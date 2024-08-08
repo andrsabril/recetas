@@ -1,5 +1,5 @@
 <template>
-    <div :style="{width: '100%'}">
+    <div :style="{width: '100%', display: 'flex', justifyContent: 'center' }">
         <Transition name="fade">
             <div class="loading" v-if="!isClientReady">
                 <Loading />
@@ -108,13 +108,15 @@
                     @resetIngredients="resetIngredients"
                 />
             </Transition>
-            <div class="btn-filter right-position">
-                <ButtonIcon
-                    icon-name="filter"
-                    color="white"
-                    @click="showMenuIngredients = true"
-                />
-            </div>
+            <Transition name="go-top">
+                <div v-if="isClientReady" class="btn-filter right-position">
+                    <ButtonIcon
+                        icon-name="filter"
+                        color="white"
+                        @click="showMenuIngredients = true"
+                    />
+                </div>
+            </Transition>
             <Transition name="go-top">
                 <div
                     class="ingredients-reference" v-if="activeIngredients.length > 0 && !showMenuIngredients">
@@ -129,6 +131,7 @@
 </template>
 <script setup>
     import { useIngredientsStore } from '@/stores/ingredients'
+    const ingredientsStore = useIngredientsStore();
     import { useNuxtApp } from '#app'
     import Cookies from 'js-cookie';
     const { formatToLink } = useFormatter();
@@ -140,15 +143,12 @@
     const stringToBoolean = (str) => str === 'true';
 
     // Initialize the state based on cookie
-    const cardVisualizationMode = ref(stringToBoolean(Cookies.get('cardVisualizationMode') || 'true'));
+    const cardVisualizationMode = ref(null);
 
     const toggleCardVisualizationMode = () => {
         cardVisualizationMode.value = !cardVisualizationMode.value;
-        Cookies.set('cardVisualizationMode', cardVisualizationMode.value.toString());
+        Cookies.set('card-visualization-mode', cardVisualizationMode.value.toString());
     };
-
-
-    const ingredientsStore = useIngredientsStore();
 
     // Recojer lista de ingredientes activados.
     const activeIngredients = computed(() => ingredientsStore.activeIngredients)
@@ -210,7 +210,6 @@
         
     };
 
-
     // Filtrar recetas según tags y término de búsqueda
     const filteredRecipes = computed(() => {
         const activeIngredientsSet = new Set(ingredientsStore.activeIngredients)
@@ -243,7 +242,7 @@
     })
     onMounted(() => {
         isClientReady.value = true;
-        cardVisualizationMode.value = stringToBoolean(Cookies.get('cardVisualizationMode') || 'true');
+        cardVisualizationMode.value = stringToBoolean(Cookies.get('card-visualization-mode') || 'true');
     });
 </script>
 <style scoped lang="scss">

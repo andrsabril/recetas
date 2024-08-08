@@ -38,17 +38,17 @@
         left: 0;
         width: 100%;
         height: auto;
-        padding: calc($page-margin / 2) calc($page-margin / 2) 0 calc($page-margin / 2) ;
         z-index: 12;
 
         .toast-wrap {
-            width: 100%;
+            width: calc(100% - $page-margin);
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
             gap: 20px;
             padding: 20px;
+            margin: calc($page-margin / 2) calc($page-margin / 2) 0 calc($page-margin / 2);
             border-radius: $radii-m;
             
             .text {

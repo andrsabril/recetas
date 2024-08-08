@@ -1,5 +1,5 @@
 <template>
-    <div class="button-wrap" :class="color">
+    <div class="button-wrap" :class="[{ 'disabled' : isDisabled }, color]">
         <Icon
             v-if="icon"
             :name="icon"
@@ -26,7 +26,11 @@
         icon: {
             type: [String , Boolean],
             default: 'refresh'
-        }
+        },
+        isDisabled: {
+            type: Boolean,
+            default: false,
+        },
     });
 
     const colorIcon = computed(() => {
@@ -88,6 +92,16 @@
         &.link {
             color: color(link, 500);
             background-color: color(link, 300);
+        }
+        &.inline {
+            color: color(greyscale, 100);
+            border: 1px solid color(greyscale, 400);
+        }
+        &.disabled {
+            color: color(greyscale, 200);
+            background-color: color(greyscale, 400);
+            pointer-events: none;
+            opacity: .4;
         }
 
         @media (hover: hover) and (pointer: fine) {

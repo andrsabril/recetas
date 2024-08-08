@@ -24,10 +24,10 @@
                         @is-checked="handleIsChecked"
                         :reset-signal="resetSignal"
                     />
-                    <div class="buttons" v-if="checkedIngredients.length > 0">
+                    <div class="buttons" v-if="checkedRecipeIngredients.length > 0">
                         <div class="add-list" @click="addToShopList">
                             <Icon name="shop-list" color="black" size="m"/>
-                            <p>Añadir (<span>{{checkedIngredients.length}}</span>)</p>
+                            <p>Añadir (<span>{{checkedRecipeIngredients.length}}</span>)</p>
                         </div>
                         <div class="reset-list" @click="resetChecked">
                             <Icon name="refresh" color="black" size="m" />
@@ -75,6 +75,11 @@
     const toastStore = useToastStore();
     const { formatToLink } = useFormatter();
 
+    const shopListStore = useShopListStore();
+    const unCheckedIngredientsCookie = ref([]);
+    const checkedIngredientsCookie = ref([]);
+
+    // Generar un ID unico
     function generateUniqueId() {
         return `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
     }
@@ -110,8 +115,8 @@
         }
     });
 
+    const checkedRecipeIngredients = ref([]);
     const slotRef = ref();
-    const checkedIngredients = ref([]);
     const openDropdownHeight = ref(0);
     const resetSignal = ref(0);
 
@@ -124,14 +129,13 @@
                 quantity: quantity,
                 unit: ingredient.unit
             };
-            checkedIngredients.value.push(ingredientData);
+            checkedRecipeIngredients.value.push(ingredientData);
         } else {
-            const index = checkedIngredients.value.findIndex(i => i.id === ingredient.id);
-            checkedIngredients.value.splice(index, 1);
+            const index = checkedRecipeIngredients.value.findIndex(i => i.id === ingredient.id);
+            checkedRecipeIngredients.value.splice(index, 1);
         }
     };
 
-    const shopListStore = useShopListStore();
     // Añadir a la lista de la compra
     const addToShopList = () => {
 
@@ -139,12 +143,12 @@
         // Ajustar la funcionalidad
 
 
-        const existingList = getShopCookie();
+        const existingList = unCheckedIngredientsCookie.value;
         const updatedList = [...existingList];
 
-        const checkedShopList = getShopCheckedCookie();
+        const checkedShopList = checkedIngredientsCookie.value;
 
-        checkedIngredients.value.forEach(newItem => {
+        checkedRecipeIngredients.value.forEach(newItem => {
 
             const existingItemIndex = updatedList.findIndex(item => item.name === newItem.name);
             const checkedItemIndex = checkedShopList.findIndex(item => item.name === newItem.name);
@@ -174,21 +178,15 @@
                 // Si el ingrediente no existe (nombre), lo añadimos a la lista
                 updatedList.push(newItem);
             }
-
-            shopListStore.updateShopList(updatedList);
         });
 
-        // Actualizar la lista de ingredientes en la lista
-        const jsonStringShopList = JSON.stringify(updatedList);
-        Cookies.set('shopList', jsonStringShopList, { expires: 7 });
+        // Actualizar listas
+        shopListStore.updateShopList(updatedList);
+        shopListStore.updateShopCheckedList(checkedShopList);
 
-        // Actualizar la lista de ingredientes seleccionados en las cookies
-        const updatedCheckedShopListJsonString = JSON.stringify(checkedShopList);
-        Cookies.set('shopCheckedList', updatedCheckedShopListJsonString, { expires: 7 });
-
-        //console.log(getShopCookie());
+        // Activar toast
         toastStore.addToast(
-            'Has añadido ' + checkedIngredients.value.length + ' ingrediente/s a tu lista de la compra!',
+            'Has añadido ' + checkedRecipeIngredients.value.length + ' ingrediente/s a tu lista de la compra!',
             'tip',
             'shop-list',
             'lista-de-la-compra'
@@ -197,17 +195,9 @@
         resetChecked();
     };
 
-    function getShopCookie() {
-        const jsonString = Cookies.get('shopList');
-        return jsonString ? JSON.parse(jsonString) : [];
-    }
-    function getShopCheckedCookie() {
-        const jsonString = Cookies.get('shopCheckedList');
-        return jsonString ? JSON.parse(jsonString) : [];
-    }
     // Reset de los elementos checked
     const resetChecked = () => {
-        checkedIngredients.value.length = 0;
+        checkedRecipeIngredients.value.length = 0;
         resetSignal.value += 1;
     };
 
@@ -232,8 +222,19 @@
     });
 
     // Actualizar la altura cuando cambie el número de ingredientes chequeados
-    watch(checkedIngredients.value, () => {
+    watch(checkedRecipeIngredients.value, () => {
         updateDropdownHeight();
+    });
+
+    onMounted(() => {
+        shopListStore.loadShopList();
+        shopListStore.loadShopCheckedList();
+
+        unCheckedIngredientsCookie.value = shopListStore.shopList;
+        checkedIngredientsCookie.value = shopListStore.shopCheckedList;
+
+        console.log(unCheckedIngredientsCookie.value);
+        console.log(checkedIngredientsCookie.value);
     });
 
 </script>

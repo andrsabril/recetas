@@ -1,15 +1,15 @@
 <template>
-    <div :style="{width: '100%'}">
+    <div :style="{width: '100%', display: 'flex', justifyContent: 'center' }">
         <Transition name="fade">
-            <div class="loading" v-if="loading">
+            <div class="loading" v-if="!isClientReady">
                 <Loading />
             </div>
         </Transition>
         <div class="shop-list-main">
-            <div v-if="!loading" class="shop-list-container">
+            <div v-if="isClientReady" class="shop-list-container">
                 <h3>Lista de la compra</h3>
-                <div v-if="getShopCookie.length > 0" class="ingredients-list">
-                    <div class="item" v-for="(item, index) in getShopCookie" :key="item.id">
+                <div v-if="unCheckedIngredientsCookie.length > 0" class="ingredients-list">
+                    <div class="item" v-for="(item, index) in unCheckedIngredientsCookie" :key="item.id">
                         <RecipeCheckbox
                             :data="item"
                             :id="item.id"
@@ -19,20 +19,32 @@
                     </div>
                 </div>
                 <div v-else class="empty">No hay ingredientes en la lista de la compra.</div>
-                <div class="add-ingredient" :class="{ 'empty': getShopCookie.length <= 0 }">
-                    <Icon name="plus" :color="getShopCookie.length <= 0 ? 'grey-dark' : 'grey'" size="m" />
-                    <p>Añadir Ingrediente</p>
-                </div>
-            </div>
-            <div class="go-back left-position">
-                <ButtonIcon
-                    icon-name="arrow-left"
-                    color="grey-light"
-                    @click="goBack"
-                />
+                <Transition name="go-top">
+                    <div
+                        v-if="!openAddIngredientMenu"
+                        class="add-ingredient"
+                        :class="{ 'empty': unCheckedIngredientsCookie.length <= 0 }"
+                        @click="openAddIngredientMenu = true"
+                    >
+                        <Icon name="plus" :color="unCheckedIngredientsCookie.length <= 0 ? 'grey-dark' : 'grey'" size="m" />
+                        <p>Añadir Ingrediente</p>
+                    </div>
+                </Transition>
             </div>
             <Transition name="go-top">
-                <div class="btn-filter right-position" v-if="getShopCookie.length > 0">
+                <div v-if="isClientReady && !openAddIngredientMenu" class="go-back left-position">
+                    <ButtonIcon
+                        icon-name="arrow-left"
+                        color="grey-light"
+                        @click="goBack"
+                    />
+                </div>
+            </Transition>
+            <Transition name="go-top">
+                <div
+                    v-if="isClientReady && unCheckedIngredientsCookie.length > 0 && !openAddIngredientMenu"
+                    class="btn-filter right-position"
+                >
                     <ButtonIcon
                         icon-name="delete"
                         color="black"
@@ -41,32 +53,31 @@
                 </div>
             </Transition>
         </div>
+        <Transition name="pop-up">
+            <MenuAddIngredient
+                v-if="openAddIngredientMenu"
+                @close-add-ingredient="openAddIngredientMenu = false"
+            />
+        </Transition>
     </div>
 </template>
 <script setup>
-    import Cookies from 'js-cookie';
     import { useShopListStore } from '@/stores/shop-list';
+    const shopListStore = useShopListStore();
     const router = useRouter();
 
-    const loading = ref(true);
-    const getShopCookie = ref([]);
-    const checkedIngredients = ref([]);
+    const isClientReady = ref(false);
+    const unCheckedIngredientsCookie = ref([]);
+    const checkedIngredientsCookie = ref([]);
 
-    function getShopCheckedCookie() {
-        const jsonString = Cookies.get('shopCheckedList');
-        return jsonString ? JSON.parse(jsonString) : [];
-    }
-    function getShopListCookie() {
-        const jsonString = Cookies.get('shopList');
-        return jsonString ? JSON.parse(jsonString) : [];
-    }
+    const openAddIngredientMenu = ref(false);
 
     // Comprueba si un ingrediente está marcado
     const isChecked = (ingredient) => {
-        return checkedIngredients.value.some(i => i.id === ingredient.id);
+        return checkedIngredientsCookie.value.some(i => i.id === ingredient.id);
     }
 
-     // Checked unchecked
+     // Checked / unchecked
      const handleIsChecked = ({ ingredient, quantity, id, checked }) => {
         if (checked) {
             let ingredientData = {
@@ -75,27 +86,24 @@
                 quantity: quantity,
                 unit: ingredient.unit
             };
-            checkedIngredients.value.push(ingredientData);
+            checkedIngredientsCookie.value.push(ingredientData);
         } else {
-            const index = checkedIngredients.value.findIndex(i => i.id === ingredient.id);
+            const index = checkedIngredientsCookie.value.findIndex(i => i.id === ingredient.id);
             if (index !== -1) {
-                checkedIngredients.value.splice(index, 1);
+                checkedIngredientsCookie.value.splice(index, 1);
             }
         }
-        console.log(checkedIngredients.value);
-        const jsonString = JSON.stringify(checkedIngredients.value);
-        Cookies.set('shopCheckedList', jsonString, { expires: 7 });
+ 
+        shopListStore.updateShopCheckedList(checkedIngredientsCookie.value);
     };
     
-    const shopListStore = useShopListStore();
-
+    // Limpiar lista de la compra
     const resetList = () => {
-        Cookies.remove('shopList');
-        getShopCookie.value = [];
-        Cookies.remove('shopCheckedList');
-        checkedIngredients.value = [];
-
         shopListStore.updateShopList([]);
+        shopListStore.updateShopCheckedList([]);
+
+        unCheckedIngredientsCookie.value = [];
+        checkedIngredientsCookie.value = [];
     };
 
     // Función para navegar a la página anterior o a la home
@@ -107,20 +115,37 @@
         }
     }
 
-    onMounted(() => {
-        getShopCookie.value = getShopListCookie();
-        checkedIngredients.value = getShopCheckedCookie();
-        console.log(getShopCookie.value);
-        console.log(checkedIngredients.value);
+    // Watch for changes in openAddIngredientMenu to disable/enable scroll
+    watch(() => openAddIngredientMenu.value, (newVal) => {
+        if (newVal) {
+            document.body.classList.add('no-scroll')
+        } else {
+            document.body.classList.remove('no-scroll')
+        }
+    })
 
-        loading.value = false;
+    onBeforeUnmount(() => {
+        document.body.classList.remove('no-scroll')
+    })
+
+    onMounted(() => {
+        shopListStore.loadShopList();
+        shopListStore.loadShopCheckedList();
+
+        unCheckedIngredientsCookie.value = shopListStore.shopList;
+        checkedIngredientsCookie.value = shopListStore.shopCheckedList;
+
+        console.log(unCheckedIngredientsCookie.value);
+        console.log(checkedIngredientsCookie.value);
+
+        isClientReady.value = true;
     });
 
 </script>
 <style scoped lang="scss">
     .shop-list-main {
         width: 100%;
-        max-width: 1000px;
+        max-width: 1200px;
         height: auto;
         padding: 20px 0;
 

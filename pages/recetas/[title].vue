@@ -1,12 +1,12 @@
 <template>
-  <div :style="{width: '100%'}">
+  <div :style="{width: '100%', display: 'flex', justifyContent: 'center' }">
     <Transition name="fade">
-        <div class="loading" v-if="loading">
+        <div class="loading" v-if="!isClientReady">
             <Loading />
         </div>
     </Transition>
     <div class="recipe-main">
-      <div v-if="recipe && !loading" class="recipe-container">
+      <div v-if="recipe && isClientReady" class="recipe-container">
         <div class="header">
           <h1>{{ recipe.title}}</h1>
           <div
@@ -96,19 +96,23 @@
         </div>
       </div>
       <div v-else class="error-data">Error en los datos</div>
-      <div class="go-back left-position">
-        <ButtonIcon
-            icon-name="arrow-left"
-            color="grey-light"
-            @click="goBack"
-        />
-      </div>
-      <div class="open-list right-position">
-        <ButtonIcon
-            icon-name="list"
-            color="black"
-        />
-      </div>
+      <Transition name="go-top">
+        <div v-if="isClientReady" class="go-back left-position">
+          <ButtonIcon
+              icon-name="arrow-left"
+              color="grey-light"
+              @click="goBack"
+          />
+        </div>
+      </Transition>
+      <Transition name="go-top">
+        <div v-if="isClientReady" class="open-list right-position">
+          <ButtonIcon
+              icon-name="list"
+              color="black"
+          />
+        </div>
+    </Transition>
     </div>
   </div> 
 </template>
@@ -117,7 +121,7 @@
   const router = useRouter();
 
   const recipe = ref(null)
-  const loading = ref(true)
+  const isClientReady = ref(false)
   const actualPerPerson = ref(null);
   const minPerPerson = ref(1);
   const maxPerPerson = ref(100);
@@ -193,20 +197,21 @@
   onMounted(async () => {
     const title  = route.params.title;
     await loadRecipe(title)
-    loading.value = false
-
+    
     // Selector cantidad por personas
     actualPerPerson.value = recipe.value.perPerson.default;
     minPerPerson.value = recipe.value.perPerson.min;
     maxPerPerson.value = recipe.value.perPerson.max;
     stepPerPerson.value = recipe.value.perPerson.step;
+
+    isClientReady.value = true
   })
 
 </script>
 <style scoped lang="scss">
   .recipe-main {
     width: 100%;
-    max-width: 1000px;
+    max-width: 1200px;
     height: auto;
     min-height: 100dvh;
   }

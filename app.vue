@@ -12,10 +12,28 @@
           />
         </div>
       </Transition>
+      <Transition name="go-top">
+        <CookiesMessage
+          v-if="showCookiesMessage"
+          @close-cookies-message="closeCookiesMessage"
+        />
+      </Transition>
+      
     </div>
 </template>
 <script setup>
+  import Cookies from 'js-cookie';
+
+  // Helper to convert cookie string to boolean
+  const stringToBoolean = (str) => str === 'true';
+  const showCookiesMessage = ref(null);
   const showGoTopButton = ref(false);
+
+  // Cerrar mensaje de cookies
+  const closeCookiesMessage = () => {
+    showCookiesMessage.value = false;
+    Cookies.set('cookies-message', showCookiesMessage.value.toString());
+  };
 
   // Acción Botón go to top
   const goTop = () => {
@@ -34,6 +52,7 @@
 
   onMounted(() => {
     window.addEventListener('scroll', scrollActions);
+    showCookiesMessage.value = stringToBoolean(Cookies.get('cookies-message') || 'true');
   });
   onUnmounted(() => {
     window.removeEventListener('scroll', scrollActions);
