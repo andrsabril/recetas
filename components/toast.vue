@@ -82,6 +82,10 @@
                 background-color: color(link, 400);
                 color: color(link, 500);
             }
+            &.accent {
+                background-color: color(accent, 300);
+                color: color(greyscale, 100);
+            }
         }
     }
 </style>

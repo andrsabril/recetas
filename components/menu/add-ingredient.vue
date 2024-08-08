@@ -9,6 +9,7 @@
                         id="name"
                         name="name"
                         placeholder="Chocolate"
+                        autocomplete="off"
                         v-model="ingredientName"
                         :class="{ 'error': ingredientNameError }"
                     >
@@ -28,6 +29,7 @@
                         placeholder="200"
                         min="1"
                         max="9999"
+                        autocomplete="off"
                         v-model="ingredientQuantity"
                         :class="{ 'error': ingredientQuantityError }"
                     >
@@ -39,6 +41,7 @@
                         id="unit"
                         name="unit"
                         placeholder="g"
+                        autocomplete="off"
                         v-model="ingredientUnit"
                     >
                 </div>
@@ -179,6 +182,11 @@
                 -webkit-box-shadow: inset 0px 0px 80px -39px color(accent, 300);
                 -moz-box-shadow: inset 0px 0px 80px -39px color(accent, 300);
                 box-shadow: inset 0px 0px 80px -39px color(accent, 300);
+            }
+            &[type=number]::-webkit-outer-spin-button,
+            &[type=number]::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
             }
         }
         .error-message {

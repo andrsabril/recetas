@@ -54,7 +54,7 @@
       &.black { fill: color(greyscale, 600); }
       &.tip { fill: color(tip, 500); }
       &.link { fill: color(link, 500); }
-      &.accent { fill: color(accent, 300); }
+      &.accent { fill: color(greyscale, 100); }
 
 
     }

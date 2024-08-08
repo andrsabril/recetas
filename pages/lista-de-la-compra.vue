@@ -6,11 +6,30 @@
             </div>
         </Transition>
         <div class="shop-list-main">
+            <Transition name="go-top">
+                <div class="more-tools" v-if="isClientReady && unCheckedIngredientsCookie.length > 0">
+                    <NavButton
+                        @click="copyToClipboard"
+                        type="secondary"
+                        :path="false"
+                        icon="copy"
+                        :notice="false"
+                    />
+                    <NavButton
+                        @click="deleteMode = !deleteMode"
+                        :type="!deleteMode ? 'secondary' : 'tertiary'"
+                        :path="false"
+                        icon="select"
+                        :notice="false"
+                    />
+                </div>
+            </Transition>
             <div v-if="isClientReady" class="shop-list-container">
                 <h3>Lista de la compra</h3>
                 <div v-if="unCheckedIngredientsCookie.length > 0" class="ingredients-list">
                     <div class="item" v-for="(item, index) in unCheckedIngredientsCookie" :key="item.id">
                         <RecipeCheckbox
+                            :is-delete-mode="deleteMode"
                             :data="item"
                             :id="item.id"
                             :checked="isChecked(item)"
@@ -24,7 +43,7 @@
                         v-if="!openAddIngredientMenu"
                         class="add-ingredient"
                         :class="{ 'empty': unCheckedIngredientsCookie.length <= 0 }"
-                        @click="openAddIngredientMenu = true"
+                        @click="openAddIngredientMenu = true; deleteMode = false"
                     >
                         <Icon name="plus" :color="unCheckedIngredientsCookie.length <= 0 ? 'grey-dark' : 'grey'" size="m" />
                         <p>Añadir Ingrediente</p>
@@ -62,6 +81,8 @@
     </div>
 </template>
 <script setup>
+    import { useToastStore } from '~/stores/toast';
+    const toastStore = useToastStore();
     import { useShopListStore } from '@/stores/shop-list';
     const shopListStore = useShopListStore();
     const router = useRouter();
@@ -72,6 +93,48 @@
 
     const openAddIngredientMenu = ref(false);
 
+    const deleteMode = ref(false);
+
+    // Copy function
+    const copyToClipboard = async () => {
+        // Convertir el array en una cadena de texto con el formato deseado
+        const textToCopy = unCheckedIngredientsCookie.value.map(item => `- ${item.name} ${item.quantity} ${item.unit}`).join('\n');
+
+        // Crear un textarea temporal para copiar el texto
+        const textarea = document.createElement('textarea');
+        textarea.value = textToCopy;
+        // Establecer el textarea fuera de la vista
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+
+        // Seleccionar el texto dentro del textarea
+        textarea.select();
+        textarea.setSelectionRange(0, 99999); // Para dispositivos móviles
+
+        try {
+            // Copiar el texto seleccionado al portapapeles
+            document.execCommand('copy');
+            toastStore.addToast(
+                'La lista de la compra se ha copiado al portapapeles!',
+                'tip',
+                'copy',
+                false,
+            );
+        } catch (error) {
+            toastStore.addToast(
+                'Error al copiar en portapapeles',
+                'accent',
+                'alert',
+                false,
+            );
+        }
+
+        // Eliminar el textarea temporal del DOM
+        document.body.removeChild(textarea);
+    };
+
+
     // Comprueba si un ingrediente está marcado
     const isChecked = (ingredient) => {
         return checkedIngredientsCookie.value.some(i => i.id === ingredient.id);
@@ -79,22 +142,33 @@
 
      // Checked / unchecked
      const handleIsChecked = ({ ingredient, quantity, id, checked }) => {
-        if (checked) {
-            let ingredientData = {
-                id: id,
-                name: ingredient.name,
-                quantity: quantity,
-                unit: ingredient.unit
-            };
-            checkedIngredientsCookie.value.push(ingredientData);
-        } else {
-            const index = checkedIngredientsCookie.value.findIndex(i => i.id === ingredient.id);
-            if (index !== -1) {
-                checkedIngredientsCookie.value.splice(index, 1);
+        if(deleteMode.value) {
+            // Borrar aquí
+            const deleteSelect = unCheckedIngredientsCookie.value.findIndex(i => i.id === ingredient.id);
+            if (deleteSelect !== -1) {
+                unCheckedIngredientsCookie.value.splice(deleteSelect, 1);
             }
         }
- 
+        else {
+            if (checked) {
+                let ingredientData = {
+                    id: id,
+                    name: ingredient.name,
+                    quantity: quantity,
+                    unit: ingredient.unit
+                };
+                checkedIngredientsCookie.value.push(ingredientData);
+            } else {
+                const index = checkedIngredientsCookie.value.findIndex(i => i.id === ingredient.id);
+                if (index !== -1) {
+                    checkedIngredientsCookie.value.splice(index, 1);
+                }
+            }
+        }
+
+        // Update List
         shopListStore.updateShopCheckedList(checkedIngredientsCookie.value);
+        shopListStore.updateShopList(unCheckedIngredientsCookie.value);
     };
     
     // Limpiar lista de la compra
@@ -104,6 +178,8 @@
 
         unCheckedIngredientsCookie.value = [];
         checkedIngredientsCookie.value = [];
+
+        deleteMode.value = false;
     };
 
     // Función para navegar a la página anterior o a la home
@@ -153,6 +229,15 @@
         max-width: 1200px;
         height: auto;
         padding: 20px 0;
+
+        .more-tools {
+            position: absolute;
+            top: $page-margin;
+            right: $page-margin;
+            display: flex;
+            flex-direction: row;
+            gap: 12px;
+        }
 
         .shop-list-container {
             padding: 0 $page-margin;

@@ -6,18 +6,28 @@
             v-model="checked"
         >
         <label :for="id" :class="{'shop-list' : !defaultPerPerson && !actualPerPerson}">
-            <div class="checkbox-icon">
-                <Icon
-                    :key="id"
-                    name="check"
-                    color="white"
-                    size="s"
-                />
-            </div>
-            <p>{{ data.name }}</p>
+            <TransitionGroup name="go-top-number">
+                <div class="checkbox-icon" v-if="!isDeleteMode">
+                    <Icon
+                        :key="id"
+                        name="check"
+                        color="white"
+                        size="s"
+                    />
+                </div>
+                <div class="delete-mode-icon" v-if="isDeleteMode">
+                    <Icon
+                        :key="id"
+                        name="cancel"
+                        color="tip"
+                        size="m"
+                    />
+                </div>
+            </TransitionGroup>
+            <p :class="{ 'delete-mode': isDeleteMode }">{{ data.name }}</p>
             <div class="text">
-                <p class="bold">{{ quantityPerPerson }}</p>
-                <p class="medium">{{ data.unit }}</p>
+                <p class="bold" :class="{ 'delete-mode': isDeleteMode }">{{ quantityPerPerson }}</p>
+                <p class="medium" :class="{ 'delete-mode': isDeleteMode }">{{ data.unit }}</p>
             </div>
         </label>
     </div>
@@ -48,7 +58,11 @@
         checked: {
             type: Boolean,
             required: false,
-        }
+        },
+        isDeleteMode: {
+            type: Boolean,
+            default: false,
+        },
     });
     const checked = ref(props.checked ? props.checked : false);
 
@@ -98,6 +112,17 @@
                     opacity: 0;
                     transform: scale(0);
                 }
+            }
+
+            .delete-mode-icon {
+                width: 20px;
+                height: 20px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 20px;
+                border: solid 1px color(tip, 300);
+                background-color: color(tip, 300);
             }
 
             .text {
@@ -155,6 +180,40 @@
                     }
                 }
             }
+        }
+    }
+    .delete-mode {
+        animation: shake 2s ease 0s infinite normal forwards;
+    }
+    @keyframes shake {
+        0%,
+        100% {
+            transform: rotate(0deg);
+            transform-origin: 50% 50%;
+        }
+
+        10% {
+            transform: rotate(2deg);
+        }
+
+        20%,
+        40%,
+        60% {
+            transform: rotate(-4deg);
+        }
+
+        30%,
+        50%,
+        70% {
+            transform: rotate(4deg);
+        }
+
+        80% {
+            transform: rotate(-2deg);
+        }
+
+        90% {
+            transform: rotate(2deg);
         }
     }
     

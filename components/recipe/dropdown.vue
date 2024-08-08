@@ -68,7 +68,6 @@
     </div>
 </template>
 <script setup>
-    import Cookies from 'js-cookie';
     import { useShopListStore } from '@/stores/shop-list';
     const emit = defineEmits(['toggle-dropdown']);
     import { useToastStore } from '~/stores/toast';
